@@ -1,5 +1,6 @@
 //reducer
-import { auth } from '../firebaseConfig'
+import { auth,googleProvider } from '../firebaseConfig'
+
 const LOG_IN = 'auth/LOG_IN'
 const LOG_OUT = 'auth/LOG_OUT'
 
@@ -19,6 +20,11 @@ export const initAuthChangeListeningAction = () => (dispatch, getState) => {
 export const logOutAsyncAction =()=> (dispatch,getState) => {
     auth.signOut()
 }
+
+export const loginByGoogleAsyncAction=() => (dispatch,getState) => {
+    auth.signInWithPopup(googleProvider)
+}
+
 
 const logInAction = () => ({ type: LOG_IN }) //action creators
 const logOutAction = () => ({ type: LOG_OUT })
