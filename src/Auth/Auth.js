@@ -7,39 +7,20 @@ import Forms from './Forms'
 import {
     initAuthChangeListeningAction,
     logOutAsyncAction,
-    loginByGoogleAsyncAction
+    loginByGoogleAsyncAction,
+    logInAsyncWithEmailAndPassword,
+    emailChangeAction,
+    passwordChangeAction
 
 } from '../state/auth'
 
 class Auth extends React.Component {
-    state = {
-        email: '',
-        password: '',
-        isUserLoggedIn: false
-    }
 
     componentDidMount() {
         this.props._initAuthChangeListeningAction()
     }
 
-    onEmailChangeHandler = event => {
-        this.setState({ email: event.target.value })
-    }
-    onPasswordChangeHandler = event => {
-        this.setState({ password: event.target.value })
-    }
-
-    onLogInClick = () => {
-        auth.signInWithEmailAndPassword(this.state.email, this.state.password)
-            .catch(error => {
-                alert('Something is wrong! Check console for error details!')
-                console.log(error)
-            })
-    }
-
-    
-
-
+   
 
     render() {
         return (
@@ -57,30 +38,34 @@ class Auth extends React.Component {
                         onClick={this.props._logOutAsyncAction}
                     >
                         X
-          </FloatingActionButton>
+            </FloatingActionButton>
                     {this.props.children}
                 </div>
                 :
                 <Forms
-                    email={this.state.email}
-                    onEmailChangeHandler={this.onEmailChangeHandler}
-                    password={this.state.password}
-                    onPasswordChangeHandler={this.onPasswordChangeHandler}
-                    onLogInClick={this.onLogInClick}
+                    email={this.props._email}
+                    onEmailChangeHandler={this.props._emailChangeAction}
+                    password={this.props._password}
+                    onPasswordChangeHandler={this.props._passwordChangeAction}
+                    onLogInClick={this.props._logInAsyncWithEmailAndPassword}
                     onLogInByGoogleClick={this.props._loginByGoogleAsyncAction}
                 />
         )
     }
 }
 const mapStateToProps = state => ({
-    _isUserLoggedIn: state.auth.isUserLoggedIn
+    _isUserLoggedIn: state.auth.isUserLoggedIn,
+    _email: state.auth.email,
+    _password: state.auth.password
 })
 
 const mapDispatchToProps = dispatch => ({
     _initAuthChangeListeningAction: () => dispatch(initAuthChangeListeningAction()),
     _logOutAsyncAction: () => dispatch(logOutAsyncAction()),
-    _loginByGoogleAsyncAction: () => dispatch(loginByGoogleAsyncAction())
-
+    _loginByGoogleAsyncAction: () => dispatch(loginByGoogleAsyncAction()),
+    _logInAsyncWithEmailAndPassword: () => dispatch(logInAsyncWithEmailAndPassword()),
+    _emailChangeAction: (event) => dispatch( emailChangeAction(event.target.value)),
+    _passwordChangeAction: (event) => dispatch( passwordChangeAction(event.target.value))
 
 })
 
