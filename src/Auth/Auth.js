@@ -50,6 +50,7 @@ class Auth extends React.Component {
                     onLogInClick={this.props._logInAsyncWithEmailAndPassword}
                     onLogInByGoogleClick={this.props._loginByGoogleAsyncAction}
                 />
+                
         )
     }
 }

@@ -1,5 +1,7 @@
 //reducer
-import { auth, googleProvider } from '../firebaseConfig'
+import { auth, googleProvider, database } from '../firebaseConfig'
+import { loadTextFromDbAsyncAction } from './userData';
+
 
 const LOG_IN = 'auth/LOG_IN'
 const LOG_OUT = 'auth/LOG_OUT'
@@ -10,7 +12,9 @@ export const initAuthChangeListeningAction = () => (dispatch, getState) => {
 
         user => {
             if (user) {
-                dispatch(logInAction()) //sync actions
+                dispatch(logInAction(user))
+                dispatch(saveLoginTimeStampAsyncAction())
+                dispatch(loadTextFromDbAsyncAction()) //sync actions
             } else {
                 dispatch(logOutAction())
             }
@@ -27,7 +31,7 @@ export const loginByGoogleAsyncAction = () => (dispatch, getState) => {
 }
 
 export const logInAsyncWithEmailAndPassword = () => (dispatch, getState) => {
-    const {auth:{email,password}}=getState()
+    const { auth: { email, password } } = getState()
     //above destruct is the same as
     // const email =getState().auth.email
     // const password =getState().auth.password
@@ -38,6 +42,13 @@ export const logInAsyncWithEmailAndPassword = () => (dispatch, getState) => {
         })
 
 }
+//login uzytkownika nnnnnnggg
+const saveLoginTimeStampAsyncAction = () => (dispatch, getState) => {
+    database.ref('/loginsLogs').push({
+        timestamp: Date.now()
+    })
+}
+
 export const emailChangeAction = newValue => ({
     type: EMAIL_CHANGE,
     newValue
@@ -47,13 +58,18 @@ export const passwordChangeAction = newValue => ({
     newValue
 })
 
-const logInAction = () => ({ type: LOG_IN }) //action creators
+const logInAction = (user) => ({
+    type: LOG_IN,
+    user
+})
+//action creators
 const logOutAction = () => ({ type: LOG_OUT })
 
 const INITIAL_STATE = {  //trzymamy czy zalog/niezalog
     isUserLoggedIn: false,
     email: '',
-    password: ''
+    password: '',
+    user: null  //do zapisu do local.storage
 }
 
 export default (state = INITIAL_STATE, action) => {
@@ -61,12 +77,14 @@ export default (state = INITIAL_STATE, action) => {
         case LOG_IN:
             return {
                 ...state,
-                isUserLoggedIn: true
+                isUserLoggedIn: true,
+                user: action.user
             }
         case LOG_OUT:
             return {
                 ...state,
-                isUserLoggedIn: false
+                isUserLoggedIn: false,
+                user:null
             }
         case EMAIL_CHANGE:
             return {
